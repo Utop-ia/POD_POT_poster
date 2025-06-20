@@ -50,6 +50,10 @@ function generaColori() {
   );
 }
 
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+}
+
 //
 
 function draw() {
