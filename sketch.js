@@ -28,8 +28,15 @@ function generaColori() {
     255 - blue(colore_pos)
   );
 }
+// Funziona su laptop
 function mousePressed() {
-  generaColori(); // cambia i colori al click
+  generaColori();
+}
+
+// Funziona su smartphone/tablet
+function touchStarted() {
+  generaColori();
+  return false; // previene comportamenti di default del browser
 }
 
 function draw() {
