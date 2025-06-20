@@ -41,6 +41,7 @@ function touchStarted() {
 
 function draw() {
   clear(); // Non cancellare!
+  background(colore_neg);
 
   // const p1 = map(mouseY, 0, height, 0, 1, true);
   // const p2 = map(mouseX, 0, width, 0, 1, true);
@@ -73,8 +74,8 @@ function draw() {
     h: row_h,
     p1: p1,
     p2: p2,
-    colore_pos: colore_neg,
-    colore_neg: colore_pos,
+    colore_pos: colore_pos,
+    colore_neg: colore_neg,
   });
 
   D1({
@@ -84,8 +85,8 @@ function draw() {
     h: row_h,
     p1: p1,
     p2: p2,
-    colore_pos: colore_neg,
-    colore_neg: colore_pos,
+    colore_pos: colore_pos,
+    colore_neg: colore_neg,
   });
 
   P2({
@@ -117,8 +118,8 @@ function draw() {
     h: row_h,
     p1: p1,
     p2: p2,
-    colore_pos: colore_neg,
-    colore_neg: colore_pos,
+    colore_pos: colore_pos,
+    colore_neg: colore_neg,
   });
 }
 //
@@ -238,9 +239,11 @@ function P2(lettera) {
   let cell_h = h / 9;
 
   let asta_w = map(p2, 0, 1, cell_w, cell_w * 5);
+
+  let sovrapposizione = 5;
   let pancia_h = map(p1, 0, 1, cell_h * 8, cell_h * 4);
-  let pancia_w = w - asta_w;
-  let pancia_x = asta_w + cell_h;
+  let pancia_w = w - asta_w + sovrapposizione;
+  let pancia_x = x + asta_w - sovrapposizione;
 
   // asta nera
   fill(colore_pos);
@@ -248,7 +251,7 @@ function P2(lettera) {
 
   // pancia
   fill(colore_pos);
-  rect(x + asta_w, y, pancia_w, pancia_h);
+  rect(pancia_x, y, pancia_w, pancia_h);
 
   //curva pancia
 
