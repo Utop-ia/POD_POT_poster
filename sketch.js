@@ -20,6 +20,27 @@ function setup() {
   generaColori(); // inizializza i colori
 }
 
+//
+
+// Funziona su laptop
+function mousePressed() {
+  gestisciInterazione();
+}
+
+// Funziona su smartphone/tablet
+function touchStarted() {
+  gestisciInterazione();
+  return false; // previene comportamenti di default del browser
+}
+
+function gestisciInterazione() {
+  if (mouseY < height / 2) {
+    save("podpot.png");
+  } else {
+    generaColori();
+  }
+}
+
 function generaColori() {
   colore_pos = color(random(255), random(255), random(255));
   colore_neg = color(
@@ -28,16 +49,8 @@ function generaColori() {
     255 - blue(colore_pos)
   );
 }
-// Funziona su laptop
-function mousePressed() {
-  generaColori();
-}
 
-// Funziona su smartphone/tablet
-function touchStarted() {
-  generaColori();
-  return false; // previene comportamenti di default del browser
-}
+//
 
 function draw() {
   clear(); // Non cancellare!
@@ -209,19 +222,21 @@ function D1(lettera) {
   translate(x, y);
   fill(colore_pos);
 
+  let sovrapposizione = 5;
+
   //asta sx
   let asta_1_h = map(p1, 0, 1, cell_h * 5, cell_h * 9);
   rect(asta_w / 2, h / 2, asta_w, asta_1_h);
 
   //asta mid
   let asta_2_h = map(p1, 0, 1, cell_h * 3, cell_h * 7);
-  let asta_2_x = asta_w + asta_w / 2;
-  rect(asta_2_x, h / 2, asta_w, asta_2_h);
+  let asta_2_x = asta_w + asta_w / 2 - sovrapposizione;
+  rect(asta_2_x, h / 2, asta_w + sovrapposizione, asta_2_h);
 
   //asta dx
   let asta_3_h = map(p1, 0, 1, cell_h, cell_h * 5);
-  let asta_3_x = asta_2_x + asta_w;
-  rect(asta_3_x, h / 2, asta_w, asta_3_h);
+  let asta_3_x = asta_2_x + asta_w - sovrapposizione;
+  rect(asta_3_x, h / 2, asta_w + sovrapposizione, asta_3_h);
 
   pop();
 }
@@ -239,9 +254,9 @@ function P2(lettera) {
   let cell_h = h / 9;
 
   let asta_w = map(p2, 0, 1, cell_w, cell_w * 5);
-
-  let sovrapposizione = 5;
   let pancia_h = map(p1, 0, 1, cell_h * 8, cell_h * 4);
+  let sovrapposizione = 5;
+
   let pancia_w = w - asta_w + sovrapposizione;
   let pancia_x = x + asta_w - sovrapposizione;
 
