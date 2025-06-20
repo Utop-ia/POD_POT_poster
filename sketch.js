@@ -31,18 +31,19 @@ function draw() {
   // const p3 = map(sin(frameCount * 0.05), -1, 1, 0, 1);
   // const p4 = noise(frameCount * 0.01);
 
-  const time = frameCount * 0.05;
+  const time = frameCount * 0.025;
   const p1 = map(sin(time), -1, 1, 0, 1);
   const p2 = map(cos(time), -1, 1, 0, 1);
 
   const col_sx_w = map(sin(time), -1, 1, width / 4, (width / 4) * 3);
   const col_dx_w = width - col_sx_w;
+  const row_h = height / 3;
 
   P1({
     x: 0,
     y: 0,
     w: col_sx_w,
-    h: 100,
+    h: row_h,
     p1: p1,
     p2: p2,
     colore_pos: colore_pos,
@@ -53,7 +54,7 @@ function draw() {
     x: col_sx_w,
     y: 0,
     w: col_dx_w,
-    h: 100,
+    h: row_h,
     p1: p1,
     p2: p2,
     colore_pos: colore_pos,
@@ -62,9 +63,9 @@ function draw() {
 
   D1({
     x: 0,
-    y: 100,
-    w: col_sx_w,
-    h: 100,
+    y: row_h,
+    w: col_dx_w,
+    h: row_h,
     p1: p1,
     p2: p2,
     colore_pos: colore_pos,
@@ -72,10 +73,10 @@ function draw() {
   });
 
   P2({
-    x: col_sx_w,
-    y: 100,
-    w: col_dx_w,
-    h: 100,
+    x: col_dx_w,
+    y: row_h,
+    w: col_sx_w,
+    h: row_h,
     p1: p1,
     p2: p2,
     colore_pos: colore_pos,
@@ -84,9 +85,9 @@ function draw() {
 
   O2({
     x: 0,
-    y: 200,
+    y: row_h * 2,
     w: col_sx_w,
-    h: 100,
+    h: row_h,
     p1: p1,
     p2: p2,
     colore_pos: colore_pos,
@@ -95,9 +96,9 @@ function draw() {
 
   T2({
     x: col_sx_w,
-    y: 200,
+    y: row_h * 2,
     w: col_dx_w,
-    h: 100,
+    h: row_h,
     p1: p1,
     p2: p2,
     colore_pos: colore_pos,
@@ -111,30 +112,23 @@ function draw() {
  */
 function P1(lettera) {
   const { x, y, w, h, p1, p2, colore_pos, colore_neg } = lettera;
+  fill(colore_neg);
+  rect(x, y, w, h);
 
   let cell_w = w / 9;
   let cell_h = h / 9;
 
   let asta_w = map(p2, 0, 1, cell_w, cell_w * 7);
   let pancia_h = map(p1, 0, 1, cell_h, cell_h * 8);
-  let pancia_w = w - cell_w - asta_w;
-  let pancia_x = asta_w + cell_h;
+  let pancia_x = x + asta_w + cell_h;
+  let pancia_w = w - pancia_x;
 
   // asta nera
   fill(colore_pos);
   rect(x, y, asta_w, h);
   //pancia
   fill(colore_pos);
-  rect(
-    asta_w + cell_w,
-    y,
-    pancia_w,
-    pancia_h,
-    0,
-    pancia_w / 2,
-    pancia_w / 2,
-    0
-  );
+  rect(pancia_x, y, pancia_w, pancia_h, 0, pancia_w / 2, pancia_w / 2, 0);
 }
 //
 
@@ -143,6 +137,8 @@ function P1(lettera) {
  */
 function O1(lettera) {
   const { x, y, w, h, p1, p2, colore_pos, colore_neg } = lettera;
+  fill(colore_neg);
+  rect(x, y, w, h);
 
   let cell_w = w / 9;
   let cell_h = h / 9;
@@ -183,6 +179,8 @@ function O1(lettera) {
  */
 function D1(lettera) {
   const { x, y, w, h, p1, p2, colore_pos, colore_neg } = lettera;
+  fill(colore_neg);
+  rect(x, y, w, h);
 
   let cell_w = w / 9;
   let cell_h = h / 9;
@@ -192,17 +190,20 @@ function D1(lettera) {
   push();
   rectMode(CENTER);
   translate(x, y);
+  fill(colore_pos);
 
+  //asta sx
   let asta_1_h = map(p1, 0, 1, cell_h * 5, cell_h * 9);
   rect(asta_w / 2, h / 2, asta_w, asta_1_h);
 
+  //asta mid
   let asta_2_h = map(p1, 0, 1, cell_h * 3, cell_h * 7);
   let asta_2_x = asta_w + asta_w / 2;
   rect(asta_2_x, h / 2, asta_w, asta_2_h);
 
+  //asta dx
   let asta_3_h = map(p1, 0, 1, cell_h, cell_h * 5);
   let asta_3_x = asta_2_x + asta_w;
-
   rect(asta_3_x, h / 2, asta_w, asta_3_h);
 
   pop();
@@ -214,13 +215,15 @@ function D1(lettera) {
  */
 function P2(lettera) {
   const { x, y, w, h, p1, p2, colore_pos, colore_neg } = lettera;
+  fill(colore_neg);
+  rect(x, y, w, h);
 
   let cell_w = w / 9;
   let cell_h = h / 9;
 
   let asta_w = map(p2, 0, 1, cell_w, cell_w * 5);
   let pancia_h = map(p1, 0, 1, cell_h * 8, cell_h * 4);
-  let pancia_w = w - cell_w - asta_w;
+  let pancia_w = w - asta_w;
   let pancia_x = asta_w + cell_h;
 
   // asta nera
@@ -235,7 +238,7 @@ function P2(lettera) {
 
   // foro pancia
   fill(colore_neg);
-  rect(x + asta_w, y + cell_h, pancia_w - cell_w, pancia_h - cell_h * 2);
+  rect(x + asta_w, y + cell_h, pancia_w - cell_h, pancia_h - cell_h * 2);
 
   //foro curva pancia
 }
@@ -246,14 +249,15 @@ function P2(lettera) {
  */
 function O2(lettera) {
   const { x, y, w, h, p1, p2, colore_pos, colore_neg } = lettera;
+  fill(colore_neg);
+  rect(x, y, w, h);
 
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  const diametro_max = min(w, h) * 0.9;
+  const diametro_max = min(w, h) * 0.7;
   const diametro = diametro_max * p1;
-
-  const borderRadius = map(p2, 0, 1, 0, w / 2); // da 0 (quadrato) a 90 (cerchio)
+  const borderRadius = map(p2, 0, 1, 0, w / 4); // da 0 (quadrato) a 90 (cerchio)
 
   // sfondo
   fill(colore_pos);
@@ -270,6 +274,8 @@ function O2(lettera) {
  */
 function T2(lettera) {
   const { x, y, w, h, p1, p2, colore_pos, colore_neg } = lettera;
+  fill(colore_neg);
+  rect(x, y, w, h);
 
   let cell_w = w / 9;
   let cell_h = h / 9;
