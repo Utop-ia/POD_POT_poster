@@ -12,19 +12,28 @@
  * @property {Colore} colore_neg - Colore sfondo
  */
 
+let colore_pos;
+let colore_neg;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  generaColori(); // inizializza i colori
 }
 
-function draw() {
-  clear(); // Non cancellare!
-
-  const colore_pos = color(0, 0, 0);
-  const colore_neg = color(
+function generaColori() {
+  colore_pos = color(random(255), random(255), random(255));
+  colore_neg = color(
     255 - red(colore_pos),
     255 - green(colore_pos),
     255 - blue(colore_pos)
   );
+}
+function mousePressed() {
+  generaColori(); // cambia i colori al click
+}
+
+function draw() {
+  clear(); // Non cancellare!
 
   // const p1 = map(mouseY, 0, height, 0, 1, true);
   // const p2 = map(mouseX, 0, width, 0, 1, true);
@@ -57,8 +66,8 @@ function draw() {
     h: row_h,
     p1: p1,
     p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
+    colore_pos: colore_neg,
+    colore_neg: colore_pos,
   });
 
   D1({
@@ -68,8 +77,8 @@ function draw() {
     h: row_h,
     p1: p1,
     p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
+    colore_pos: colore_neg,
+    colore_neg: colore_pos,
   });
 
   P2({
@@ -101,8 +110,8 @@ function draw() {
     h: row_h,
     p1: p1,
     p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
+    colore_pos: colore_neg,
+    colore_neg: colore_pos,
   });
 }
 //
@@ -255,8 +264,8 @@ function O2(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  const diametro_max = min(w, h) * 0.7;
-  const diametro = diametro_max * p1;
+  const diametro_max = min(w, h) * 0.5;
+  const diametro = diametro_max * p1 + cell_h;
   const borderRadius = map(p2, 0, 1, 0, w / 4); // da 0 (quadrato) a 90 (cerchio)
 
   // sfondo
