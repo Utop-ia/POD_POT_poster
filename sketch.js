@@ -218,32 +218,29 @@ function D1(lettera) {
 
   let cell_w = w / 9;
   let cell_h = h / 9;
-  let asta_w = map(p2, 0, 1, cell_w, cell_w * 3);
+
+  let asta_1_w = map(p1, 0, 1, cell_w * 3, cell_w * 6);
+  let asta_3_h = map(p2, 0, 1, cell_h * 3, cell_h * 6);
+  let asta_2_w = map(p1, 0, 1, cell_w * 6, cell_w * 3);
+  let asta_2_h = map(p2, 0, 1, cell_h * 6, cell_h * 7.5);
+
+  let asta_2_x = x + asta_1_w;
 
   //disegno
+  //asta 1
+  fill(colore_pos);
+  rect(x, y, asta_1_w, h);
+
   push();
   rectMode(CENTER);
-  translate(x, y);
   fill(colore_pos);
-
-  let sovrapposizione = 5;
-
-  //asta sx
-  let asta_1_h = map(p1, 0, 1, cell_h * 5, cell_h * 9);
-  rect(asta_w / 2, h / 2, asta_w, asta_1_h);
-
-  //asta mid
-  let asta_2_h = map(p1, 0, 1, cell_h * 3, cell_h * 7);
-  let asta_2_x = asta_w + asta_w / 2 - sovrapposizione;
-  rect(asta_2_x, h / 2, asta_w + sovrapposizione, asta_2_h);
-
-  //asta dx
-  let asta_3_h = map(p1, 0, 1, cell_h, cell_h * 5);
-  let asta_3_x = asta_2_x + asta_w - sovrapposizione;
-  rect(asta_3_x, h / 2, asta_w + sovrapposizione, asta_3_h);
-
+  //asta 2
+  rect(asta_2_x, y + h / 2, asta_2_w, asta_2_h);
+  //asta 3
+  rect(x + w / 2, y + h / 2, w, asta_3_h);
   pop();
 }
+
 //
 
 /**
