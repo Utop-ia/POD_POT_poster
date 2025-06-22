@@ -135,9 +135,9 @@ function disegnaIstruzioni() {
   textSize(bodySize);
   text("GENERARE NUOVI COLORI", width / 2, zona3_center_y);
 
-  // ZONA EXTRA - INIZIARE
-  textSize(bodySize * 0.5);
-  text("Tocca ovunque per inizire", width / 2, zona3_center_y + bodySize * 3);
+  // // ZONA EXTRA - INIZIARE
+  // textSize(bodySize * 0.5);
+  // text("Tocca ovunque per inizire", width / 2, zona3_center_y + bodySize * 3);
 
   // Linee divisorie per visualizzare le zone
   stroke(255, 200);
