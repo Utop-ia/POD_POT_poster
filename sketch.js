@@ -89,7 +89,7 @@ function windowResized() {
 
 function disegnaIstruzioni() {
   // OVERLAY SEMI-TRASPARENTE sopra l'animazione
-  fill(0, 0, 0, 150); // nero semi-trasparente (puoi cambiare l'opacità)
+  fill(0, 0, 0, 220); // nero semi-trasparente (puoi cambiare l'opacità)
   rect(0, 0, width, height);
 
   // Testo bianco
