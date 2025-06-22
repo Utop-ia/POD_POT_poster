@@ -1,4 +1,10 @@
-/** @typedef {import("./p5/types").Color} Colore */
+// @ts-nocheck
+// Definizioni per p5.js
+
+/**
+ * @typedef {Object} Colore
+ * @property {number} levels - Array dei valori RGBA
+ */
 
 /**
  * @typedef {Object} Lettera
@@ -12,8 +18,12 @@
  * @property {Colore} colore_neg - Colore sfondo
  */
 
+/** @type {Colore} */
 let colore_pos;
+/** @type {Colore} */
 let colore_neg;
+/** @type {number} */
+let stato_trasformazione = 0; // 0 = disattive, 1 = orizzontale, 2 = verticale
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -34,11 +44,19 @@ function touchStarted() {
 }
 
 function gestisciInterazione() {
-  if (mouseY < height / 2) {
+  if (mouseY < height / 3) {
     save("podpot.png");
+  } else if (mouseY < (height / 3) * 2) {
+    toggleStato();
   } else {
     generaColori();
   }
+}
+
+function toggleStato() {
+  stato_trasformazione = (stato_trasformazione + 1) % 3;
+  const stati = ["DISATTIVE", "ORIZZONTALE", "VERTICALE"];
+  console.log("Trasformazioni:", stati[stato_trasformazione]);
 }
 
 function generaColori() {
@@ -65,90 +83,191 @@ function draw() {
   const p2 = map(cos(time), -1, 1, 0, 1);
 
   // Definisci i margini proporzionali al canvas
-  const margine = min(width, height) * 0.02; // 3% della dimensione minore del canvas
+  const margine = min(width, height) * 0.03; // 3% della dimensione minore del canvas
   const margine_lettere = min(width, height) * 0.02; // 2% della dimensione minore del canvas
 
   // Calcola le dimensioni disponibili sottraendo i margini
   const area_disponibile_w = width - margine * 2;
   const area_disponibile_h = height - margine * 2;
 
-  // Calcola le dimensioni delle colonne e righe con i margini
-  const col_sx_w =
-    map(
-      sin(time),
-      -1,
-      1,
-      area_disponibile_w / 4,
-      (area_disponibile_w / 4) * 3
-    ) - margine_lettere;
-  const col_dx_w = area_disponibile_w - col_sx_w - margine_lettere;
-  const row_h = (area_disponibile_h - margine_lettere * 2) / 3; // 3 righe con 2 spazi tra loro
+  let col_sx_w, col_dx_w, row_h;
 
-  P1({
-    x: margine,
-    y: margine,
-    w: col_sx_w,
-    h: row_h,
-    p1: p1,
-    p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
-  });
+  if (stato_trasformazione === 0) {
+    // STATO 0: Colonne disattive (uniformi)
+    const area_netta = area_disponibile_w - margine_lettere;
+    col_sx_w = area_netta / 2;
+    col_dx_w = area_netta / 2;
+    row_h = (area_disponibile_h - margine_lettere * 2) / 3;
+  } else if (stato_trasformazione === 1) {
+    // STATO 1: Trasformazione orizzontale (colonne animate)
+    const col_sx_ratio = map(sin(time), -1, 1, 0.25, 0.75); // da 25% a 75%
+    const area_netta = area_disponibile_w - margine_lettere;
+    col_sx_w = area_netta * col_sx_ratio;
+    col_dx_w = area_netta * (1 - col_sx_ratio);
+    row_h = (area_disponibile_h - margine_lettere * 2) / 3;
+  } else {
+    // stato_trasformazione === 2
+    // STATO 2: Trasformazione verticale (righe animate)
+    const area_netta = area_disponibile_w - margine_lettere;
+    col_sx_w = area_netta / 2;
+    col_dx_w = area_netta / 2;
 
-  O1({
-    x: margine + col_sx_w + margine_lettere,
-    y: margine,
-    w: col_dx_w,
-    h: row_h,
-    p1: p1,
-    p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
-  });
+    // Animazione verticale: altezza delle righe varia
+    const row_ratio_1 = map(sin(time), -1, 1, 0.2, 0.6); // prima riga: 20%-60%
+    const row_ratio_2 = map(cos(time * 1.3), -1, 1, 0.15, 0.45); // seconda riga: 15%-45%
+    const row_ratio_3 = 1 - row_ratio_1 - row_ratio_2; // terza riga: il resto
 
-  D1({
-    x: margine,
-    y: margine + row_h + margine_lettere,
-    w: col_dx_w,
-    h: row_h,
-    p1: p1,
-    p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
-  });
+    const area_netta_h = area_disponibile_h - margine_lettere * 2;
+    const row_h_1 = area_netta_h * row_ratio_1;
+    const row_h_2 = area_netta_h * row_ratio_2;
+    const row_h_3 = area_netta_h * row_ratio_3;
 
-  P2({
-    x: margine + col_dx_w + margine_lettere,
-    y: margine + row_h + margine_lettere,
-    w: col_sx_w,
-    h: row_h,
-    p1: p1,
-    p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
-  });
+    // Per semplicità, usiamo row_h come array o gestiamo caso per caso
+    row_h = [row_h_1, row_h_2, row_h_3];
+  }
 
-  O2({
-    x: margine,
-    y: margine + (row_h + margine_lettere) * 2,
-    w: col_sx_w,
-    h: row_h,
-    p1: p1,
-    p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
-  });
+  // Calcolo posizioni per stato normale (0 e 1) o verticale (2)
+  if (stato_trasformazione < 2) {
+    // Stati 0 e 1: layout normale
+    P1({
+      x: margine,
+      y: margine,
+      w: col_sx_w,
+      h: row_h,
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
 
-  T2({
-    x: margine + col_sx_w + margine_lettere,
-    y: margine + (row_h + margine_lettere) * 2,
-    w: col_dx_w,
-    h: row_h,
-    p1: p1,
-    p2: p2,
-    colore_pos: colore_pos,
-    colore_neg: colore_neg,
-  });
+    O1({
+      x: margine + col_sx_w + margine_lettere,
+      y: margine,
+      w: col_dx_w,
+      h: row_h,
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    D1({
+      x: margine,
+      y: margine + row_h + margine_lettere,
+      w: col_dx_w,
+      h: row_h,
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    P2({
+      x: margine + col_dx_w + margine_lettere,
+      y: margine + row_h + margine_lettere,
+      w: col_sx_w,
+      h: row_h,
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    O2({
+      x: margine,
+      y: margine + (row_h + margine_lettere) * 2,
+      w: col_sx_w,
+      h: row_h,
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    T2({
+      x: margine + col_sx_w + margine_lettere,
+      y: margine + (row_h + margine_lettere) * 2,
+      w: col_dx_w,
+      h: row_h,
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+  } else {
+    // Stato 2: layout con righe animate
+    let current_y = margine;
+
+    P1({
+      x: margine,
+      y: current_y,
+      w: col_sx_w,
+      h: row_h[0],
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    O1({
+      x: margine + col_sx_w + margine_lettere,
+      y: current_y,
+      w: col_dx_w,
+      h: row_h[0],
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    current_y += row_h[0] + margine_lettere;
+
+    D1({
+      x: margine,
+      y: current_y,
+      w: col_dx_w,
+      h: row_h[1],
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    P2({
+      x: margine + col_dx_w + margine_lettere,
+      y: current_y,
+      w: col_sx_w,
+      h: row_h[1],
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    current_y += row_h[1] + margine_lettere;
+
+    O2({
+      x: margine,
+      y: current_y,
+      w: col_sx_w,
+      h: row_h[2],
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+
+    T2({
+      x: margine + col_sx_w + margine_lettere,
+      y: current_y,
+      w: col_dx_w,
+      h: row_h[2],
+      p1: p1,
+      p2: p2,
+      colore_pos: colore_pos,
+      colore_neg: colore_neg,
+    });
+  }
 }
 //
 
