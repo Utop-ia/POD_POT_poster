@@ -25,7 +25,9 @@ let colore_neg;
 /** @type {number} */
 let stato_trasformazione = 0; // 0 = disattive, 1 = orizzontale, 2 = verticale
 /** @type {boolean} */
-let mostra_istruzioni = true;
+let mostra_benvenuto = true;
+/** @type {boolean} */
+let mostra_istruzioni = false;
 
 let font;
 function preload() {
@@ -52,8 +54,15 @@ function touchStarted() {
 }
 
 function gestisciInterazione() {
+  if (mostra_benvenuto) {
+    // Dalla schermata di benvenuto passiamo alle istruzioni
+    mostra_benvenuto = false;
+    mostra_istruzioni = true;
+    return;
+  }
+
   if (mostra_istruzioni) {
-    // Se stiamo mostrando le istruzioni, qualsiasi click le nasconde
+    // Dalle istruzioni passiamo al sistema attivo
     mostra_istruzioni = false;
     return;
   }
@@ -87,13 +96,38 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+function disegnaBenvenuto() {
+  // SFONDO PIENO
+  background(0);
+
+  // Testo bianco centrato
+  fill(255, 255, 255);
+  textAlign(CENTER, CENTER);
+
+  // Dimensione responsive del testo
+  const titleSize = min(width, height) * 0.08;
+  const subtitleSize = min(width, height) * 0.04;
+
+  // Titolo principale
+  textSize(titleSize);
+  text("POD POT", width / 2, height / 2 - titleSize * 0.8);
+
+  // Sottotitolo
+  textSize(subtitleSize);
+  text(
+    "tocca dove vuoi per iniziare",
+    width / 2,
+    height / 2 + subtitleSize * 0.8
+  );
+}
+
 function disegnaIstruzioni() {
   // OVERLAY SEMI-TRASPARENTE sopra l'animazione
-  fill(0, 0, 0, 220);
+  fill(0, 0, 0, 180);
   rect(0, 0, width, height);
 
-  // Testo bianco semi-trasparente
-  fill(255, 255, 255, 200);
+  // Testo bianco
+  fill(255, 255, 255);
   textAlign(CENTER, CENTER);
 
   // Dimensioni responsive del testo
@@ -135,12 +169,8 @@ function disegnaIstruzioni() {
   textSize(bodySize);
   text("GENERARE NUOVI COLORI", width / 2, zona3_center_y);
 
-  // // ZONA EXTRA - INIZIARE
-  // textSize(bodySize * 0.5);
-  // text("Tocca ovunque per inizire", width / 2, zona3_center_y + bodySize * 3);
-
   // Linee divisorie per visualizzare le zone
-  stroke(255, 200);
+  stroke(255);
   strokeWeight(1);
   line(0, height / 3, width, height / 3);
   line(0, (height * 2) / 3, width, (height * 2) / 3);
@@ -150,6 +180,12 @@ function disegnaIstruzioni() {
 //
 
 function draw() {
+  // Se stiamo mostrando il benvenuto, disegna solo quello
+  if (mostra_benvenuto) {
+    disegnaBenvenuto();
+    return;
+  }
+
   // DISEGNA SEMPRE L'ANIMAZIONE (anche quando mostra le istruzioni)
   clear(); // Non cancellare!
   background(colore_neg);
@@ -544,7 +580,7 @@ function O2(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  const diametro_max = min(w, h) * 0.4; // RIDOTTO da 0.5 a 0.4
+  const diametro_max = min(w, h) * 0.4;
   const diametro = constrain(
     diametro_max * p1 + cell_h,
     cell_h,
