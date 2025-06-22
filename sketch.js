@@ -113,8 +113,8 @@ function draw() {
     col_dx_w = area_netta / 2;
 
     // Animazione verticale: altezza delle righe varia
-    const row_ratio_1 = map(sin(time), -1, 1, 0.2, 0.6); // prima riga: 20%-60%
-    const row_ratio_2 = map(cos(time * 1.3), -1, 1, 0.15, 0.45); // seconda riga: 15%-45%
+    const row_ratio_1 = map(sin(time), -1, 1, 0.2, 0.4); // prima riga: 20%-40%
+    const row_ratio_2 = map(cos(time * 2), -1, 1, 0.2, 0.4); // seconda riga: 20%-40%
     const row_ratio_3 = 1 - row_ratio_1 - row_ratio_2; // terza riga: il resto
 
     const area_netta_h = area_disponibile_h - margine_lettere * 2;
