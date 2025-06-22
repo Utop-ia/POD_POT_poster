@@ -60,12 +60,7 @@ function draw() {
   clear(); // Non cancellare!
   background(colore_neg);
 
-  // const p1 = map(mouseY, 0, height, 0, 1, true);
-  // const p2 = map(mouseX, 0, width, 0, 1, true);
-  // const p3 = map(sin(frameCount * 0.05), -1, 1, 0, 1);
-  // const p4 = noise(frameCount * 0.01);
-
-  const time = frameCount * 0.025;
+  const time = frameCount * 0.02;
   const p1 = map(sin(time), -1, 1, 0, 1);
   const p2 = map(cos(time), -1, 1, 0, 1);
 
@@ -160,6 +155,7 @@ function P1(lettera) {
   // asta nera
   fill(colore_pos);
   rect(x, y, asta_w, h);
+
   //pancia
   fill(colore_pos);
   rect(pancia_x, y, pancia_w, pancia_h, 0, pancia_w / 2, pancia_w / 2, 0);
@@ -226,7 +222,6 @@ function D1(lettera) {
 
   let asta_2_x = x + asta_1_w;
 
-  //disegno
   //asta 1
   fill(colore_pos);
   rect(x, y, asta_1_w, h);
@@ -274,8 +269,6 @@ function P2(lettera) {
   // foro pancia
   fill(colore_neg);
   rect(x + asta_w, y + cell_h, pancia_w - cell_h, pancia_h - cell_h * 2);
-
-  //foro curva pancia
 }
 //
 
@@ -294,13 +287,21 @@ function O2(lettera) {
   const diametro = diametro_max * p1 + cell_h;
   const borderRadius = map(p2, 0, 1, 0, w / 4); // da 0 (quadrato) a 90 (cerchio)
 
-  // sfondo
+  // Sfondo
   fill(colore_pos);
   rect(x, y, w, h, borderRadius);
 
-  // cerchio interno
+  // Forma interna interno
+  const shapeSize = diametro;
+  const shapeX = x + w / 2 + cell_w - shapeSize / 2;
+  const shapeY = y + h / 2 - cell_h - shapeSize / 2;
+
+  const maxRadius = shapeSize / 2;
+  const minRadius = 0;
+  const shapeRadius = map(p1, 0, 1, maxRadius, minRadius); // da cerchio (p1 = 0) a quadrato (p1 = 1)
+
   fill(colore_neg);
-  ellipse(x + w / 2 + cell_w, y + h / 2 - cell_h, diametro, diametro);
+  rect(shapeX, shapeY, shapeSize, shapeSize, shapeRadius);
 }
 //
 
@@ -315,9 +316,7 @@ function T2(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  //rect(x, y, w, h);
-
-  //disegno
+  //forma
   push();
   translate(x, y);
 
