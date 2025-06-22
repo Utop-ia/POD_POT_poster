@@ -64,13 +64,29 @@ function draw() {
   const p1 = map(sin(time), -1, 1, 0, 1);
   const p2 = map(cos(time), -1, 1, 0, 1);
 
-  const col_sx_w = map(sin(time), -1, 1, width / 4, (width / 4) * 3);
-  const col_dx_w = width - col_sx_w;
-  const row_h = height / 3;
+  // Definisci i margini proporzionali al canvas
+  const margine = min(width, height) * 0.02; // 3% della dimensione minore del canvas
+  const margine_lettere = min(width, height) * 0.02; // 2% della dimensione minore del canvas
+
+  // Calcola le dimensioni disponibili sottraendo i margini
+  const area_disponibile_w = width - margine * 2;
+  const area_disponibile_h = height - margine * 2;
+
+  // Calcola le dimensioni delle colonne e righe con i margini
+  const col_sx_w =
+    map(
+      sin(time),
+      -1,
+      1,
+      area_disponibile_w / 4,
+      (area_disponibile_w / 4) * 3
+    ) - margine_lettere;
+  const col_dx_w = area_disponibile_w - col_sx_w - margine_lettere;
+  const row_h = (area_disponibile_h - margine_lettere * 2) / 3; // 3 righe con 2 spazi tra loro
 
   P1({
-    x: 0,
-    y: 0,
+    x: margine,
+    y: margine,
     w: col_sx_w,
     h: row_h,
     p1: p1,
@@ -80,8 +96,8 @@ function draw() {
   });
 
   O1({
-    x: col_sx_w,
-    y: 0,
+    x: margine + col_sx_w + margine_lettere,
+    y: margine,
     w: col_dx_w,
     h: row_h,
     p1: p1,
@@ -91,8 +107,8 @@ function draw() {
   });
 
   D1({
-    x: 0,
-    y: row_h,
+    x: margine,
+    y: margine + row_h + margine_lettere,
     w: col_dx_w,
     h: row_h,
     p1: p1,
@@ -102,8 +118,8 @@ function draw() {
   });
 
   P2({
-    x: col_dx_w,
-    y: row_h,
+    x: margine + col_dx_w + margine_lettere,
+    y: margine + row_h + margine_lettere,
     w: col_sx_w,
     h: row_h,
     p1: p1,
@@ -113,8 +129,8 @@ function draw() {
   });
 
   O2({
-    x: 0,
-    y: row_h * 2,
+    x: margine,
+    y: margine + (row_h + margine_lettere) * 2,
     w: col_sx_w,
     h: row_h,
     p1: p1,
@@ -124,8 +140,8 @@ function draw() {
   });
 
   T2({
-    x: col_sx_w,
-    y: row_h * 2,
+    x: margine + col_sx_w + margine_lettere,
+    y: margine + (row_h + margine_lettere) * 2,
     w: col_dx_w,
     h: row_h,
     p1: p1,
