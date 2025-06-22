@@ -90,7 +90,7 @@ function draw() {
   const area_disponibile_w = width - margine * 2;
   const area_disponibile_h = height - margine * 2;
 
-  let col_sx_w, col_dx_w, row_h;
+  let col_sx_w, col_dx_w, row_h, row_heights;
 
   if (stato_trasformazione === 0) {
     // STATO 0: Colonne disattive (uniformi)
@@ -122,8 +122,7 @@ function draw() {
     const row_h_2 = area_netta_h * row_ratio_2;
     const row_h_3 = area_netta_h * row_ratio_3;
 
-    // Per semplicità, usiamo row_h come array o gestiamo caso per caso
-    row_h = [row_h_1, row_h_2, row_h_3];
+    row_heights = [row_h_1, row_h_2, row_h_3];
   }
 
   // Calcolo posizioni per stato normale (0 e 1) o verticale (2)
@@ -202,7 +201,7 @@ function draw() {
       x: margine,
       y: current_y,
       w: col_sx_w,
-      h: row_h[0],
+      h: row_heights[0],
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -213,20 +212,20 @@ function draw() {
       x: margine + col_sx_w + margine_lettere,
       y: current_y,
       w: col_dx_w,
-      h: row_h[0],
+      h: row_heights[0],
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
       colore_neg: colore_neg,
     });
 
-    current_y += row_h[0] + margine_lettere;
+    current_y += row_heights[0] + margine_lettere;
 
     D1({
       x: margine,
       y: current_y,
       w: col_dx_w,
-      h: row_h[1],
+      h: row_heights[1],
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -237,20 +236,20 @@ function draw() {
       x: margine + col_dx_w + margine_lettere,
       y: current_y,
       w: col_sx_w,
-      h: row_h[1],
+      h: row_heights[1],
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
       colore_neg: colore_neg,
     });
 
-    current_y += row_h[1] + margine_lettere;
+    current_y += row_heights[1] + margine_lettere;
 
     O2({
       x: margine,
       y: current_y,
       w: col_sx_w,
-      h: row_h[2],
+      h: row_heights[2],
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -261,7 +260,7 @@ function draw() {
       x: margine + col_sx_w + margine_lettere,
       y: current_y,
       w: col_dx_w,
-      h: row_h[2],
+      h: row_heights[2],
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -282,18 +281,21 @@ function P1(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  let asta_w = map(p2, 0, 1, cell_w, cell_w * 7);
-  let pancia_h = map(p1, 0, 1, cell_h, cell_h * 8);
+  // LIMITAZIONI AGGIUNTE
+  let asta_w = constrain(map(p2, 0, 1, cell_w, cell_w * 7), cell_w, w * 0.8);
+  let pancia_h = constrain(map(p1, 0, 1, cell_h, cell_h * 8), cell_h, h);
   let pancia_x = x + asta_w + cell_h;
-  let pancia_w = w - pancia_x;
+  let pancia_w = constrain(w - (asta_w + cell_h), 0, w);
 
   // asta nera
   fill(colore_pos);
   rect(x, y, asta_w, h);
 
-  //pancia
-  fill(colore_pos);
-  rect(pancia_x, y, pancia_w, pancia_h, 0, pancia_w / 2, pancia_w / 2, 0);
+  // pancia - solo se c'è spazio
+  if (pancia_w > 0) {
+    fill(colore_pos);
+    rect(pancia_x, y, pancia_w, pancia_h, 0, pancia_w / 2, pancia_w / 2, 0);
+  }
 }
 //
 
@@ -311,9 +313,13 @@ function O1(lettera) {
   let y_min = y + h - cell_h;
   let y_max = y + cell_h;
 
-  let y_cima = map(p1, 0, 1, y_min - cell_h, y_max, true);
+  let y_cima = constrain(
+    map(p1, 0, 1, y_min - cell_h, y_max, true),
+    y_max,
+    y_min
+  );
   let h_corpo = y_min - y_cima;
-  let w_mov = map(p2, 0, 1, cell_h, w - cell_w * 2, true);
+  let w_mov = constrain(map(p2, 0, 1, cell_h, w - cell_w * 2, true), cell_h, w);
 
   const aspectRatio = (cell_h * 2) / w;
   let h_mov = w_mov * aspectRatio;
@@ -350,10 +356,19 @@ function D1(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  let asta_1_w = map(p1, 0, 1, cell_w * 3, cell_w * 6);
-  let asta_3_h = map(p2, 0, 1, cell_h * 3, cell_h * 6);
-  let asta_2_w = map(p1, 0, 1, cell_w * 6, cell_w * 3);
-  let asta_2_h = map(p2, 0, 1, cell_h * 6, cell_h * 7.5);
+  // LIMITAZIONI AGGIUNTE
+  let asta_1_w = constrain(
+    map(p1, 0, 1, cell_w * 3, cell_w * 6),
+    cell_w,
+    w * 0.7
+  );
+  let asta_3_h = constrain(map(p2, 0, 1, cell_h * 3, cell_h * 6), cell_h, h);
+  let asta_2_w = constrain(
+    map(p1, 0, 1, cell_w * 6, cell_w * 3),
+    cell_w,
+    w - asta_1_w
+  );
+  let asta_2_h = constrain(map(p2, 0, 1, cell_h * 6, cell_h * 7.5), cell_h, h);
 
   let asta_2_x = x + asta_1_w;
 
@@ -384,26 +399,35 @@ function P2(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  let asta_w = map(p2, 0, 1, cell_w, cell_w * 5);
-  let pancia_h = map(p1, 0, 1, cell_h * 8, cell_h * 4);
+  // LIMITAZIONI AGGIUNTE
+  let asta_w = constrain(map(p2, 0, 1, cell_w, cell_w * 5), cell_w, w * 0.6);
+  let pancia_h = constrain(
+    map(p1, 0, 1, cell_h * 8, cell_h * 4),
+    cell_h * 2,
+    h
+  );
   let sovrapposizione = 5;
 
-  let pancia_w = w - asta_w + sovrapposizione;
+  let pancia_w = constrain(w - asta_w + sovrapposizione, 0, w);
   let pancia_x = x + asta_w - sovrapposizione;
 
   // asta nera
   fill(colore_pos);
   rect(x, y, asta_w, h);
 
-  // pancia
-  fill(colore_pos);
-  rect(pancia_x, y, pancia_w, pancia_h);
+  // pancia - solo se c'è spazio
+  if (pancia_w > cell_w) {
+    fill(colore_pos);
+    rect(pancia_x, y, pancia_w, pancia_h);
 
-  //curva pancia
-
-  // foro pancia
-  fill(colore_neg);
-  rect(x + asta_w, y + cell_h, pancia_w - cell_h, pancia_h - cell_h * 2);
+    // foro pancia
+    let foro_w = constrain(pancia_w - cell_h, 0, pancia_w);
+    let foro_h = constrain(pancia_h - cell_h * 2, 0, pancia_h);
+    if (foro_w > 0 && foro_h > 0) {
+      fill(colore_neg);
+      rect(x + asta_w, y + cell_h, foro_w, foro_h);
+    }
+  }
 }
 //
 
@@ -418,22 +442,38 @@ function O2(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  const diametro_max = min(w, h) * 0.5;
-  const diametro = diametro_max * p1 + cell_h;
-  const borderRadius = map(p2, 0, 1, 0, w / 4); // da 0 (quadrato) a 90 (cerchio)
+  const diametro_max = min(w, h) * 0.4; // RIDOTTO da 0.5 a 0.4
+  const diametro = constrain(
+    diametro_max * p1 + cell_h,
+    cell_h,
+    min(w, h) * 0.8
+  );
+  const borderRadius = constrain(map(p2, 0, 1, 0, w / 4), 0, min(w, h) / 4);
 
   // Sfondo
   fill(colore_pos);
   rect(x, y, w, h, borderRadius);
 
-  // Forma interna interno
+  // Forma interna
   const shapeSize = diametro;
-  const shapeX = x + w / 2 + cell_w - shapeSize / 2;
-  const shapeY = y + h / 2 - cell_h - shapeSize / 2;
+  const shapeX = constrain(
+    x + w / 2 + cell_w - shapeSize / 2,
+    x,
+    x + w - shapeSize
+  );
+  const shapeY = constrain(
+    y + h / 2 - cell_h - shapeSize / 2,
+    y,
+    y + h - shapeSize
+  );
 
   const maxRadius = shapeSize / 2;
   const minRadius = 0;
-  const shapeRadius = map(p1, 0, 1, maxRadius, minRadius); // da cerchio (p1 = 0) a quadrato (p1 = 1)
+  const shapeRadius = constrain(
+    map(p1, 0, 1, maxRadius, minRadius),
+    minRadius,
+    maxRadius
+  );
 
   fill(colore_neg);
   rect(shapeX, shapeY, shapeSize, shapeSize, shapeRadius);
@@ -455,12 +495,17 @@ function T2(lettera) {
   push();
   translate(x, y);
 
-  let join_sx_x = map(p2, 0, 1, cell_w, cell_w * 7);
-  let join_dx_x = join_sx_x + cell_w;
+  // LIMITAZIONI AGGIUNTE
+  let join_sx_x = constrain(
+    map(p2, 0, 1, cell_w, cell_w * 7),
+    cell_w,
+    w - cell_w * 2
+  );
+  let join_dx_x = constrain(join_sx_x + cell_w, join_sx_x, w - cell_w);
   let join_y = cell_h;
-  let trave_h = map(p1, 0, 1, cell_h, cell_h * 7);
-  let base_dx_x = map(p1, 0, 1, cell_w * 5, w);
-  let base_sx_x = map(p1, 0, 1, cell_w * 4, 0);
+  let trave_h = constrain(map(p1, 0, 1, cell_h, cell_h * 7), cell_h, h * 0.8);
+  let base_dx_x = constrain(map(p1, 0, 1, cell_w * 5, w), cell_w * 3, w);
+  let base_sx_x = constrain(map(p1, 0, 1, cell_w * 4, 0), 0, w - cell_w * 3);
 
   fill(colore_pos);
 
