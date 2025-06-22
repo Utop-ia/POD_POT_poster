@@ -24,9 +24,17 @@ let colore_pos;
 let colore_neg;
 /** @type {number} */
 let stato_trasformazione = 0; // 0 = disattive, 1 = orizzontale, 2 = verticale
+/** @type {boolean} */
+let mostra_istruzioni = true;
+
+let font;
+function preload() {
+  font = loadFont("fonts/FAFFIN-REGULAR.TTF");
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  textFont(font);
   generaColori(); // inizializza i colori
 }
 
@@ -44,6 +52,13 @@ function touchStarted() {
 }
 
 function gestisciInterazione() {
+  if (mostra_istruzioni) {
+    // Se stiamo mostrando le istruzioni, qualsiasi click le nasconde
+    mostra_istruzioni = false;
+    return;
+  }
+
+  // Logica originale per l'interazione con l'animazione
   if (mouseY < height / 3) {
     save("podpot.png");
   } else if (mouseY < (height / 3) * 2) {
@@ -72,9 +87,76 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+function disegnaIstruzioni() {
+  // OVERLAY SEMI-TRASPARENTE sopra l'animazione
+  fill(0, 0, 0, 150); // nero semi-trasparente (puoi cambiare l'opacità)
+  rect(0, 0, width, height);
+
+  // Testo bianco
+  fill(255);
+  textAlign(CENTER, CENTER);
+
+  // Calcola le dimensioni responsive del testo
+  const baseSize = min(width, height) * 0.04;
+  const titleSize = baseSize * 1.5;
+  const bodySize = baseSize;
+  const smallSize = baseSize * 0.8;
+
+  // Titolo
+  textSize(titleSize);
+  textStyle(BOLD);
+  fill(255, 255, 255, 200); // Bianco semi-trasparente
+  text("PODPOT", width / 2, height * 0.15);
+
+  // Reset stile per il corpo del testo
+  textStyle(NORMAL);
+  textSize(bodySize);
+
+  // Istruzioni principali
+  const centerY = height / 2;
+  const lineSpacing = bodySize * 1.8;
+
+  // Zona superiore - SALVA
+  text("ZONA SUPERIORE", width / 2, centerY - lineSpacing * 2);
+  textSize(smallSize);
+  text(
+    "Tocca per salvare l'immagine corrente",
+    width / 2,
+    centerY - lineSpacing * 1.5
+  );
+
+  // Zona centrale - ANIMAZIONE
+  textSize(bodySize);
+  text("ZONA CENTRALE", width / 2, centerY - lineSpacing * 0.5);
+  textSize(smallSize);
+  text("Tocca per cambiare modalità di animazione", width / 2, centerY);
+
+  // Zona inferiore - COLORI
+  textSize(bodySize);
+  text("ZONA INFERIORE", width / 2, centerY + lineSpacing * 1.2);
+  textSize(smallSize);
+  text(
+    "Tocca per generare nuovi colori",
+    width / 2,
+    centerY + lineSpacing * 1.7
+  );
+
+  // Istruzione per continuare
+  textSize(bodySize);
+  text("Tocca ovunque per iniziare", width / 2, height * 0.85);
+
+  // Linee divisorie per visualizzare le zone (semi-trasparenti)
+  stroke(255, 100); // bianco molto trasparente
+  strokeWeight(1);
+  line(0, height / 3, width, height / 3);
+  line(0, (height * 2) / 3, width, (height * 2) / 3);
+  noStroke();
+}
+
 //
 
 function draw() {
+  // DISEGNA SEMPRE L'ANIMAZIONE (anche quando mostra le istruzioni)
   clear(); // Non cancellare!
   background(colore_neg);
 
@@ -83,14 +165,14 @@ function draw() {
   const p2 = map(cos(time), -1, 1, 0, 1);
 
   // Definisci i margini proporzionali al canvas
-  const margine = min(width, height) * 0.03; // 3% della dimensione minore del canvas
+  const margine = min(width, height) * 0.02; // 2% della dimensione minore del canvas
   const margine_lettere = min(width, height) * 0.02; // 2% della dimensione minore del canvas
 
   // Calcola le dimensioni disponibili sottraendo i margini
   const area_disponibile_w = width - margine * 2;
   const area_disponibile_h = height - margine * 2;
 
-  let col_sx_w, col_dx_w, row_h, row_heights;
+  let col_sx_w, col_dx_w, row_h, row_heights_sx, row_heights_dx;
 
   if (stato_trasformazione === 0) {
     // STATO 0: Colonne disattive (uniformi)
@@ -107,22 +189,35 @@ function draw() {
     row_h = (area_disponibile_h - margine_lettere * 2) / 3;
   } else {
     // stato_trasformazione === 2
-    // STATO 2: Trasformazione verticale (righe animate)
+    // STATO 2: Trasformazione verticale con movimento opposto
     const area_netta = area_disponibile_w - margine_lettere;
     col_sx_w = area_netta / 2;
     col_dx_w = area_netta / 2;
 
-    // Animazione verticale: altezza delle righe varia
-    const row_ratio_1 = map(sin(time), -1, 1, 0.2, 0.4); // prima riga: 20%-40%
-    const row_ratio_2 = map(cos(time * 2), -1, 1, 0.2, 0.4); // seconda riga: 20%-40%
-    const row_ratio_3 = 1 - row_ratio_1 - row_ratio_2; // terza riga: il resto
+    // COLONNA SINISTRA: dal basso verso l'alto
+    const row_ratio_1_sx = map(sin(time), -1, 1, 0.2, 0.4); // prima riga sx
+    const row_ratio_2_sx = map(cos(time * 1.5), -1, 1, 0.2, 0.4); // seconda riga sx
+    const row_ratio_3_sx = 1 - row_ratio_1_sx - row_ratio_2_sx; // terza riga sx
+
+    // COLONNA DESTRA: dall'alto verso il basso (invertita)
+    const row_ratio_1_dx = map(sin(time), -1, 1, 0.4, 0.2); // prima riga dx (INVERTITA)
+    const row_ratio_2_dx = map(cos(time * 1.5), -1, 1, 0.4, 0.2); // seconda riga dx (INVERTITA)
+    const row_ratio_3_dx = 1 - row_ratio_1_dx - row_ratio_2_dx; // terza riga dx
 
     const area_netta_h = area_disponibile_h - margine_lettere * 2;
-    const row_h_1 = area_netta_h * row_ratio_1;
-    const row_h_2 = area_netta_h * row_ratio_2;
-    const row_h_3 = area_netta_h * row_ratio_3;
 
-    row_heights = [row_h_1, row_h_2, row_h_3];
+    // Altezze per colonna sinistra
+    const row_h_1_sx = area_netta_h * row_ratio_1_sx;
+    const row_h_2_sx = area_netta_h * row_ratio_2_sx;
+    const row_h_3_sx = area_netta_h * row_ratio_3_sx;
+
+    // Altezze per colonna destra
+    const row_h_1_dx = area_netta_h * row_ratio_1_dx;
+    const row_h_2_dx = area_netta_h * row_ratio_2_dx;
+    const row_h_3_dx = area_netta_h * row_ratio_3_dx;
+
+    row_heights_sx = [row_h_1_sx, row_h_2_sx, row_h_3_sx];
+    row_heights_dx = [row_h_1_dx, row_h_2_dx, row_h_3_dx];
   }
 
   // Calcolo posizioni per stato normale (0 e 1) o verticale (2)
@@ -194,14 +289,16 @@ function draw() {
       colore_neg: colore_neg,
     });
   } else {
-    // Stato 2: layout con righe animate
-    let current_y = margine;
+    // Stato 2: layout con righe animate separate per colonna
+    let current_y_sx = margine;
+    let current_y_dx = margine;
 
+    // PRIMA RIGA
     P1({
       x: margine,
-      y: current_y,
+      y: current_y_sx,
       w: col_sx_w,
-      h: row_heights[0],
+      h: row_heights_sx[0], // Altezza colonna sinistra
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -210,22 +307,25 @@ function draw() {
 
     O1({
       x: margine + col_sx_w + margine_lettere,
-      y: current_y,
+      y: current_y_dx,
       w: col_dx_w,
-      h: row_heights[0],
+      h: row_heights_dx[0], // Altezza colonna destra
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
       colore_neg: colore_neg,
     });
 
-    current_y += row_heights[0] + margine_lettere;
+    // Aggiorna posizioni Y separate
+    current_y_sx += row_heights_sx[0] + margine_lettere;
+    current_y_dx += row_heights_dx[0] + margine_lettere;
 
+    // SECONDA RIGA
     D1({
       x: margine,
-      y: current_y,
+      y: current_y_sx,
       w: col_dx_w,
-      h: row_heights[1],
+      h: row_heights_sx[1], // Altezza colonna sinistra
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -234,22 +334,25 @@ function draw() {
 
     P2({
       x: margine + col_dx_w + margine_lettere,
-      y: current_y,
+      y: current_y_dx,
       w: col_sx_w,
-      h: row_heights[1],
+      h: row_heights_dx[1], // Altezza colonna destra
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
       colore_neg: colore_neg,
     });
 
-    current_y += row_heights[1] + margine_lettere;
+    // Aggiorna posizioni Y separate
+    current_y_sx += row_heights_sx[1] + margine_lettere;
+    current_y_dx += row_heights_dx[1] + margine_lettere;
 
+    // TERZA RIGA
     O2({
       x: margine,
-      y: current_y,
+      y: current_y_sx,
       w: col_sx_w,
-      h: row_heights[2],
+      h: row_heights_sx[2], // Altezza colonna sinistra
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
@@ -258,14 +361,19 @@ function draw() {
 
     T2({
       x: margine + col_sx_w + margine_lettere,
-      y: current_y,
+      y: current_y_dx,
       w: col_dx_w,
-      h: row_heights[2],
+      h: row_heights_dx[2], // Altezza colonna destra
       p1: p1,
       p2: p2,
       colore_pos: colore_pos,
       colore_neg: colore_neg,
     });
+  }
+
+  // SE MOSTRA ISTRUZIONI, disegna l'overlay SOPRA l'animazione
+  if (mostra_istruzioni) {
+    disegnaIstruzioni();
   }
 }
 //
