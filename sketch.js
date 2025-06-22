@@ -89,64 +89,58 @@ function windowResized() {
 
 function disegnaIstruzioni() {
   // OVERLAY SEMI-TRASPARENTE sopra l'animazione
-  fill(0, 0, 0, 220); // nero semi-trasparente (puoi cambiare l'opacità)
+  fill(0, 0, 0, 220);
   rect(0, 0, width, height);
 
-  // Testo bianco
-  fill(255);
+  // Testo bianco semi-trasparente
+  fill(255, 255, 255, 200);
   textAlign(CENTER, CENTER);
 
-  // Calcola le dimensioni responsive del testo
+  // Dimensioni responsive del testo
   const baseSize = min(width, height) * 0.04;
-  const titleSize = baseSize * 1.5;
   const bodySize = baseSize;
   const smallSize = baseSize * 0.8;
 
-  // Titolo
-  textSize(titleSize);
-  textStyle(BOLD);
-  fill(255, 255, 255, 200); // Bianco semi-trasparente
-  text("PODPOT", width / 2, height * 0.15);
+  // Tre zone di interazione
+  //ZONA 1 - ORIENTAMENTO
+  const zona1_y_start = 0;
+  const zona1_y_end = height / 3;
+  const zona1_center_y = (zona1_y_start + zona1_y_end) / 2;
 
-  // Reset stile per il corpo del testo
-  textStyle(NORMAL);
-  textSize(bodySize);
+  //ZONA 2 - ORIENTAMENTO
+  const zona2_y_start = height / 3;
+  const zona2_y_end = (height * 2) / 3;
+  const zona2_center_y = (zona2_y_start + zona2_y_end) / 2;
 
-  // Istruzioni principali
-  const centerY = height / 2;
-  const lineSpacing = bodySize * 1.8;
+  //ZONA 3 - ORIENTAMENTO
+  const zona3_y_start = (height * 2) / 3;
+  const zona3_y_end = height;
+  const zona3_center_y = (zona3_y_start + zona3_y_end) / 2;
 
-  // Zona superiore - SALVA
-  text("ZONA SUPERIORE", width / 2, centerY - lineSpacing * 2);
+  // ZONA 1 - SALVA IMMAGINE
   textSize(smallSize);
-  text(
-    "Tocca per salvare l'immagine corrente",
-    width / 2,
-    centerY - lineSpacing * 1.5
-  );
-
-  // Zona centrale - ANIMAZIONE
+  text("Tocca qui per", width / 2, zona1_center_y - bodySize * 1.2);
   textSize(bodySize);
-  text("ZONA CENTRALE", width / 2, centerY - lineSpacing * 0.5);
+  text("SALVARE L'IMMAGINE", width / 2, zona1_center_y);
+
+  // ZONA 2 - CAMBIA ANIMAZIONE
   textSize(smallSize);
-  text("Tocca per cambiare modalità di animazione", width / 2, centerY);
-
-  // Zona inferiore - COLORI
+  text("Tocca qui per", width / 2, zona2_center_y - bodySize * 1.2);
   textSize(bodySize);
-  text("ZONA INFERIORE", width / 2, centerY + lineSpacing * 1.2);
+  text("CAMBIARE L'ANIMAZIONE", width / 2, zona2_center_y);
+
+  // ZONA 3 - GENERA COLORI
   textSize(smallSize);
-  text(
-    "Tocca per generare nuovi colori",
-    width / 2,
-    centerY + lineSpacing * 1.7
-  );
-
-  // Istruzione per continuare
+  text("Tocca qui per", width / 2, zona3_center_y - bodySize * 1.2);
   textSize(bodySize);
-  text("Tocca ovunque per iniziare", width / 2, height * 0.85);
+  text("GENERARE NUOVI COLORI", width / 2, zona3_center_y);
 
-  // Linee divisorie per visualizzare le zone (semi-trasparenti)
-  stroke(255, 100); // bianco molto trasparente
+  // ZONA EXTRA - INIZIARE
+  textSize(bodySize * 0.5);
+  text("Tocca ovunque per inizire", width / 2, zona3_center_y + bodySize * 3);
+
+  // Linee divisorie per visualizzare le zone
+  stroke(255, 200);
   strokeWeight(1);
   line(0, height / 3, width, height / 3);
   line(0, (height * 2) / 3, width, (height * 2) / 3);
