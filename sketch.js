@@ -115,7 +115,7 @@ function disegnaBenvenuto() {
   // Sottotitolo
   textSize(subtitleSize);
   text(
-    "tocca dove vuoi per iniziare",
+    "Tocca dove vuoi per iniziare",
     width / 2,
     height / 2 + subtitleSize * 0.8
   );
@@ -153,19 +153,19 @@ function disegnaIstruzioni() {
 
   // ZONA 1 - SALVA IMMAGINE
   textSize(smallSize);
-  text("Tocca qui per", width / 2, zona1_center_y - bodySize * 1.2);
+  text("Tocca questa zona per", width / 2, zona1_center_y - bodySize * 1.2);
   textSize(bodySize);
   text("SALVARE L'IMMAGINE", width / 2, zona1_center_y);
 
   // ZONA 2 - CAMBIA ANIMAZIONE
   textSize(smallSize);
-  text("Tocca qui per", width / 2, zona2_center_y - bodySize * 1.2);
+  text("Tocca questa zona per", width / 2, zona2_center_y - bodySize * 1.2);
   textSize(bodySize);
   text("CAMBIARE L'ANIMAZIONE", width / 2, zona2_center_y);
 
   // ZONA 3 - GENERA COLORI
   textSize(smallSize);
-  text("Tocca qui per", width / 2, zona3_center_y - bodySize * 1.2);
+  text("Tocca questa zona per", width / 2, zona3_center_y - bodySize * 1.2);
   textSize(bodySize);
   text("GENERARE NUOVI COLORI", width / 2, zona3_center_y);
 
