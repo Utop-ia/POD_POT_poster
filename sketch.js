@@ -580,41 +580,21 @@ function O2(lettera) {
   let cell_w = w / 9;
   let cell_h = h / 9;
 
-  const diametro_max = min(w, h) * 0.4;
-  const diametro = constrain(
-    diametro_max * p1 + cell_h,
-    cell_h,
-    min(w, h) * 0.8
-  );
-  const borderRadius = constrain(map(p2, 0, 1, 0, w / 4), 0, min(w, h) / 4);
+  const scala_cerchio = map(p1, 0, 1, 0.3, 0.6);
+  const angolo_forma = p2;
 
-  // Sfondo
+  const diametro_max = min(w, h) * 0.9;
+  const diametro = diametro_max * scala_cerchio;
+
+  const borderRadius = map(angolo_forma, 0, 1, 0, w / 4);
+
+  // forma esterna
   fill(colore_pos);
   rect(x, y, w, h, borderRadius);
 
-  // Forma interna
-  const shapeSize = diametro;
-  const shapeX = constrain(
-    x + w / 2 + cell_w - shapeSize / 2,
-    x,
-    x + w - shapeSize
-  );
-  const shapeY = constrain(
-    y + h / 2 - cell_h - shapeSize / 2,
-    y,
-    y + h - shapeSize
-  );
-
-  const maxRadius = shapeSize / 2;
-  const minRadius = 0;
-  const shapeRadius = constrain(
-    map(p1, 0, 1, maxRadius, minRadius),
-    minRadius,
-    maxRadius
-  );
-
+  // cerchio interno
   fill(colore_neg);
-  rect(shapeX, shapeY, shapeSize, shapeSize, shapeRadius);
+  ellipse(x + w / 2 + cell_w, y + h / 2 - cell_h, diametro, diametro);
 }
 //
 
